@@ -1,0 +1,8 @@
+# Secrets — never commit real credentials
+.env
+
+# macOS artifacts
+.DS_Store
+
+# Dev/test output files
+*.bak

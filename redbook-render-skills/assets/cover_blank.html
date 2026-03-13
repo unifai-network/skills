@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', 'Source Han Sans CN', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            width: 1080px;
+            height: 1440px;
+            overflow: hidden;
+        }
+        
+        .cover-container {
+            width: 1080px;
+            height: 1440px;
+            background: {{THEME_BACKGROUND}};
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cover-inner {
+            position: absolute;
+            width: 950px;
+            height: 1310px;
+            left: 65px;
+            top: 65px;
+            background: #F3F3F3;
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            padding: 80px 85px;
+            /* 空白占位 */
+        }
+    </style>
+</head>
+<body>
+    <div class="cover-container">
+        <!-- 只保留背景容器 -->
+        <div class="cover-inner">
+            <!-- 预留完全空白的区域，供用户二次排版文字 -->
+        </div>
+    </div>
+</body>
+</html>
