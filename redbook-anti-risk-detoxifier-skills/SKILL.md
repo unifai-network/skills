@@ -1,57 +1,37 @@
 ---
 name: redbook-anti-risk-detoxifier-skills
 description: >-
-  文案去毒/合规洗稿技能。国内社媒（如小红书、抖音、微信）内容发布前必须调用的合规过滤器，专防图片
-  OCR 封控与违禁词。主要用于把敏感词汇/硬核技术/爬虫话术中性化。当你要发布图文卡片或笔记之前，
-  必须先用此技能处理。
+  Copywriting detoxification & compliance formatting skill. An essential compliance filter invoked prior to publishing content on domestic social media platforms (such as Redbook, TikTok, WeChat) to defend against image OCR surveillance and banned word detection. Crucial for neutralizing sensitive terms, hardcore tech jargon, and scraping rhetoric.
 ---
-
-# 文案去毒 / 合规洗稿 (Content Detoxifier)
-
-## 核心目标
-
-防御平台 OCR（光学字符识别）机制和文本风控系统。确保最终生成的小红书或国内社媒图片及正文不会因"翻墙"、"数字货币"、"推特抓取"、"风控"、"逆向"等高危字眼导致账号限流、封禁或触发 HTTP 451 风控。
-
-## 行业通用做法
-
-业内内容矩阵/自动化变现必须配备**违禁词库扫描 + 改写引擎**。三个核心策略：
-
-1. **暗语替换与中性化（隐写）**：把敏感名词替换为中性化商业词汇。
-2. **正向化洗稿**：不讲"逆向、对付风控、外网"，而是讲"底层原理、超级信息差、前沿资讯"。
-3. **彻底抹除跨境相关字眼**：不写 Twitter/X、Telegram/TG、"外网"、"翻墙"、"海外平台"，统一包装为"行业前沿内幕"、"头部大佬圈子"、"内部一手资讯"。
-
+# 🌟 Content Detoxifier & Compliance Formatter
+## Core Objective
+Defend against platform OCR (Optical Character Recognition) mechanisms and text-based risk control systems. Ensure that the final images and body text generated for Redbook or other domestic social media do not trigger AI shadows, bans, or HTTP 451 errors due to high-risk keywords like "VPN", "Crypto", "Twitter scraping", "risk-control", or "reverse engineering".
+## Industry Standard Practices
+For successful content matrixes and automated monetization pipelines, it is mandatory to bundle a **Banned Word Scanner + Rewriting Engine**. There are three core strategies:
+1. **Implicit Replacement (Neutralization):** Replace sensitive terminology with neutral commercial phrases.
+2. **Positive Framing:** Instead of talking about "defeating anti-bot systems, bypassing, or dark web", reframe the narrative around "underlying principles, super information arbitrage, and frontier insights".
+3. **Erase Cross-Border Traces:** DO NOT write "Twitter/X", "Telegram/TG", "Outside Network", "VPN", or "Overseas Platforms". Unify all such origins as "cutting-edge industry insights", "top-tier inner circles", or "first-hand internal information".
 ---
-
-## 操作流程
-
-### 第一步：扫描高危词并替换
-
-| 原始高危词汇（禁止出现）              | 软化 / 中性化替代方案                                      |
-|--------------------------------------|-----------------------------------------------------------|
-| 风控 / 防封 / 封号防封               | 平台规则规避 / 账号权重维护 / 提高稳定性                    |
-| 爬虫 / 逆向 / 抓取                   | 自动化采集 / 效率工具 / 数据自动化分析                      |
-| 突破防御 / 免登录绕过                 | 底层协议探秘 / 浏览器自动化黑科技                           |
-| 翻墙 / 节点 / 梯子 / VPN             | 魔法网络 / 全球视野 /（最好直接不提）                       |
-| Crypto / 加密货币 / 搞钱             | Web3 / 前沿科技 / 数字资产 / 商业套利                       |
-| Twitter / 外网 / 海外 / 推特 / X     | 行业前沿内幕 / 头部机构圈子 / 最新硬核研报 / 内部一手资讯    |
-
-### 第二步：AIGC 降权与真实感防护
-
-小红书对"低质 AIGC"、"批量 AI 生成"进行严厉打击（限流 / 停曝 / 封号）。
-
-- **去"AI"标签化**：减少直接使用"AI"、"人工智能"、"大模型"、"ChatGPT"等字眼。
-- **替换策略**：把"AI 管家/AI 工具"替换为"全自动工作流"、"云端数字分身"、"自动化小助手"、"超级外脑"、"24h 挂机系统"。
-- **增加"人味"**：必须提供有实际意义的干货信息；多用第一人称（我跑通了、我测试了3天、踩了5个坑），要有情绪波动和真实使用体感。禁止纯空洞抒情。
-
-### 第三步：语气与调性软化
-
-> **粗暴原稿**："教你写个推特爬虫对抗风控搞币圈数据"
+## Operating Procedure
+### Step 1: Scan and Replace High-Risk Words
+| Original High-Risk Term (BANNED)         | Softened / Neutralized Alternative                                  |
+|------------------------------------------|---------------------------------------------------------------------|
+| Risk-control / Anti-ban / Avoid banning  | Platform rules compliance / Account weight maintenance / Stability  |
+| Scraping / Spider / Reverse / Crawl      | Automated collection / Efficiency tools / Automated data analysis   |
+| Bypass defenses / Login-free bypass      | Protocol exploration / Browser automation black-tech                |
+| Break Great-Firewall / VPN / Proxy nodes | Magic network / Global vision / (Ideally, do not mention at all)    |
+| Crypto / Crypto-currency / Earn quick money | Web3 / Frontier tech / Digital assets / Commercial arbitrage     |
+| Twitter / X / Overseas network           | Industry frontier insights / Top-tier institution circle / Internal intel |
+### Step 2: AIGC De-ranking Prevention and Authencity Boost
+Redbook severely penalizes "low-quality AIGC" and "mass-produced AI text" (resulting in shadowbans or direct account bans).
+- **De-AI Labeling:** Minimize direct usage of terms like "AI, Artificial Intelligence, Large Language Models, ChatGPT".
+- **Replacement Strategy:** Replace "AI Butlers / AI Tools" with "Fully Automated Workflows, Cloud-based Digital Clones, Automation Assistants, Super External Brains, 24/7 Hosting Systems".
+- **Add Human Touch:** You MUST provide practical, actionable value. Use first-person perspective actively ("I successfully ran this pipeline", "I tested it for 3 days", "I stepped on 5 traps"). Require emotional fluctuation and authentic user experience. Ban purely hollow lyrical sentences.
+### Step 3: Tone Softening
+> **Rough Draft:** "Teaching you how to write a Twitter spider to bypass risk-control and scrape Crypto data."
 >
-> **去毒后应变为**："分享一个超酷的浏览器自动化黑科技，轻松获取 Web3 第一手信息差！🚀"
-
-### 第四步：输出自检（必须执行）
-
-1. 图片渲染所需内容（标题、卡片文字）中是否还有任何高危词？
-2. 整体语气是否像"干货分享博主"，而不是"灰产黑产哥"？
-
-> **硬性规定**：在调用 `xhs-note-creator` 或 `render_xhs.py` 生成任何图片、或提供笔记正文**之前**，原稿必须严格通过以上步骤的清洗和重写。
+> **Post-Detox Version:** "Sharing a super cool browser automation black-tech to effortlessly grab first-hand Web3 information arbitrage! 🚀"
+### Step 4: Output Self-Check (Mandatory)
+1. Do any high-risk words remain in the content destined for image rendering (Titles, Card text)?
+2. Does the overall tone sound like a "value-sharing lifestyle blogger" rather than a "black-hat hacker"?
+> **HARD RULE:** Before invoking `redbook-content-creator-skills` or `render_xhs.py` to generate ANY images or body text, the source draft MUST pass strictly through the scrubbing and rewriting procedures outlined above.
