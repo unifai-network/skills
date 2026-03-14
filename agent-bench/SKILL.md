@@ -25,7 +25,22 @@ Extract the task, model list, and timeout from the user's message. Before procee
 
 Wait for the user to confirm or adjust.
 
-### 2. Spawn Subagents
+### 2. Prepare Isolated Workspaces
+
+Each subagent needs its own directory so their files don't collide. This is critical — without isolation, subagents running in parallel will overwrite each other's output files.
+
+Create a timestamped benchmark directory with one subdirectory per model:
+```
+.agent-bench/<YYYYMMDD-HHmmss>/
+├── opus/
+├── sonnet/
+├── haiku/
+└── results.json
+```
+
+Create these directories before spawning any subagents. Add `.agent-bench/` to `.gitignore` if the project uses git.
+
+### 3. Spawn Subagents
 
 Launch one subagent per model, all in the same turn (parallel). Each subagent receives an identical prompt — just the task, as if it came directly from a user. Do not mention benchmarking, scoring, or evaluation. The subagent should behave exactly as it would for a real user request.
 
@@ -34,14 +49,12 @@ Prompt template:
 ```
 <task, verbatim from the user>
 
-Save all files in the current working directory.
+Use <absolute-path-to-model-directory> as your working directory for any files you create or modify.
 ```
 
-That's it. Keep the prompt natural and minimal.
+Each subagent gets its own unique directory path (e.g., `.agent-bench/20260314-100000/opus/`). Keep the prompt natural — the workspace instruction is a reasonable constraint that wouldn't seem unusual to any agent.
 
-**Workspace isolation**: Each subagent needs its own workspace so their files don't collide. Use whatever isolation mechanism the runtime provides:
-- In Claude Code: use `isolation: "worktree"` when spawning subagents — this gives each agent its own git worktree with full write permissions. The worktree path is returned in the result.
-- In other runtimes: create separate directories per model and tell each subagent to use its assigned directory.
+If the runtime also supports additional isolation mechanisms (e.g., `isolation: "worktree"` in Claude Code), use them as an extra layer of protection. But always assign per-model directories regardless — this is the universal, runtime-agnostic safeguard.
 
 Other implementation details:
 - Each subagent must start with a clean context (no shared history)
@@ -49,7 +62,7 @@ Other implementation details:
 - If the runtime supports background/async execution, use it so all models run in parallel
 - If the runtime supports timeout for subagents, apply the configured timeout
 
-### 3. Collect Results
+### 4. Collect Results
 
 As each subagent completes (or times out), record:
 - **Duration**: Wall-clock time from spawn to completion (seconds)
@@ -61,7 +74,7 @@ As each subagent completes (or times out), record:
 
 If a subagent times out, record what it managed to produce (partial results still get evaluated).
 
-### 4. Evaluate Each Model
+### 5. Evaluate Each Model
 
 Now act as an impartial judge. For each model:
 
@@ -81,7 +94,7 @@ For each score, write a 1-2 sentence justification. Be specific — reference ac
 
 Evaluation integrity matters: evaluate each model's output independently. Read and score one model fully before moving to the next, so earlier scores don't anchor later ones. If you catch yourself comparing during scoring, reset and evaluate against the task requirements only.
 
-### 5. Present Results
+### 6. Present Results
 
 Output a **summary table** in markdown:
 
@@ -106,7 +119,7 @@ Then for each model, show:
 
 End with a brief **verdict**: which model performed best for this task and why, noting any interesting tradeoffs (e.g., "sonnet was faster and cheaper but opus produced more thorough analysis").
 
-### 6. Save Results
+### 7. Save Results
 
 Write structured results to `results.json` in a `.agent-bench/<YYYYMMDD-HHmmss>/` directory within the current working directory (add `.agent-bench/` to `.gitignore` if the project uses git):
 
