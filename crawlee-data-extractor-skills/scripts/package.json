@@ -1,0 +1,11 @@
+{
+  "name": "crawlee-data-extractor",
+  "version": "1.0.0",
+  "description": "Scraping script using Crawlee",
+  "main": "scrape.js",
+  "type": "module",
+  "dependencies": {
+    "crawlee": "^3.12.0",
+    "playwright": "^1.49.0"
+  }
+}
