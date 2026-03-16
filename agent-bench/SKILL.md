@@ -66,7 +66,7 @@ Other implementation details:
 
 As each subagent completes (or times out), record:
 - **Duration**: Wall-clock time from spawn to completion (seconds)
-- **Tokens**: Total token usage if available from the runtime (otherwise mark as "N/A")
+- **Usage stats**: Record all token and cost fields the runtime provides, as-is. Do not calculate derived fields (e.g., don't sum uncached + cached to produce a total). Do not estimate costs if the runtime doesn't return them. Just pass through what's available.
 - **Tool uses**: Number of tool calls if available (otherwise mark as "N/A")
 - **Status**: "completed", "timed_out", or "error"
 - **Response**: The subagent's final response text
@@ -105,11 +105,11 @@ Output a **summary table** in markdown:
 **Timeout**: <value>
 **Date**: <timestamp>
 
-| Model | Completeness | Quality | Overall | Duration | Tokens | Status |
-|-------|-------------|---------|---------|----------|--------|--------|
-| opus  | 9           | 8       | 9       | 45s      | 12,340 | completed |
-| sonnet| 8           | 9       | 8       | 32s      | 8,210  | completed |
-| haiku | 6           | 5       | 5       | 18s      | 4,100  | completed |
+| Model | Completeness | Quality | Overall | Duration | Msgs | Tool Calls | Status | ... (runtime-reported usage) |
+|-------|-------------|---------|---------|----------|------|------------|--------|------------------------------|
+| opus  | 9           | 8       | 9       | 45s      | 12   | 15         | completed | (add columns for whatever usage fields the runtime returns) |
+| sonnet| 8           | 9       | 8       | 32s      | 8    | 10         | completed | |
+| haiku | 6           | 5       | 5       | 18s      | 4    | 6          | completed | |
 ```
 
 Then for each model, show:
@@ -133,8 +133,11 @@ Write structured results to `results.json` in a `.agent-bench/<YYYYMMDD-HHmmss>/
       "model": "opus",
       "status": "completed",
       "duration_seconds": 45,
-      "total_tokens": 12340,
-      "tool_uses": 15,
+      "usage": {},
+      "rounds": {
+        "messages": 12,
+        "tool_calls": 15
+      },
       "scores": {
         "completeness": 9,
         "quality": 8,
@@ -153,6 +156,17 @@ Write structured results to `results.json` in a `.agent-bench/<YYYYMMDD-HHmmss>/
 ```
 
 Tell the user where the benchmark directory and each model's workspace are so they can inspect individual outputs.
+
+## Runtime-Specific Notes
+
+Token reporting varies by runtime. Report fields as-is using whatever names the runtime uses — do not rename or reinterpret them.
+
+**OpenClaw**: The `session_status` endpoint returns token stats with misleading labels:
+- **"Tokens: Xk in / Yk out"** — `in` means **uncached input tokens only** (does NOT include cached input). `out` is output tokens.
+- **"Cache: N% hit · Xk cached, Yk new"** — `cached` is cached input tokens (cache read hits), `new` is cache writes.
+- There is **no total input token field** returned. Do not sum uncached + cached to fabricate one.
+- No USD cost is returned.
+- The completion event stats line (e.g., `tokens 29.7k (in 29.6k / out 82)`) matches the session_status values and has the same caveat — `in` is uncached only.
 
 ## Tips for Good Benchmark Tasks
 
