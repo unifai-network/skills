@@ -187,7 +187,21 @@ Tell the user where the benchmark directory and each model's workspace are so th
 
 Token reporting varies by runtime. Report fields as-is using whatever names the runtime uses — do not rename or reinterpret them.
 
-**OpenClaw**: The `session_status` endpoint returns token stats with misleading labels:
+**OpenClaw — Device Pairing**: When spawning subagents on OpenClaw, the gateway requires device pairing approval. Each subagent connection triggers a pending pairing request that must be approved before the subagent can run.
+
+**Before spawning subagents**, approve pending requests proactively:
+```bash
+# Approve the most recent pending device request
+openclaw devices approve --latest
+
+# Or list pending requests and approve by ID
+openclaw devices list
+openclaw devices approve <requestId>
+```
+
+If a subagent fails with `"gateway closed (1008): pairing required"`, approve pending requests and retry. You may need to run `openclaw devices approve --latest` multiple times (once per subagent). This only needs to be done once per device — subsequent connections from the same subagent are remembered.
+
+**OpenClaw — Token Reporting**: The `session_status` endpoint returns token stats with misleading labels:
 - **"Tokens: Xk in / Yk out"** — `in` means **uncached input tokens only** (does NOT include cached input). `out` is output tokens.
 - **"Cache: N% hit · Xk cached, Yk new"** — `cached` is cached input tokens (cache read hits), `new` is cache writes.
 - There is **no total input token field** returned. Do not sum uncached + cached to fabricate one.
