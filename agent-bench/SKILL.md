@@ -74,7 +74,13 @@ As each subagent completes (or times out), record:
 
 If a subagent times out, record what it managed to produce (partial results still get evaluated).
 
-### 5. Evaluate Each Model
+### 5. Classify the Task
+
+Auto-classify the benchmark task into one or more categories from: `coding`, `writing`, `analysis`, `documents`, `creative`, `skills`, `automation`, `research`, `productivity`. A task can belong to multiple categories (e.g., "automate PDF processing" → `["automation", "documents"]`). Also generate up to 5 short descriptive tags.
+
+If running on OpenClaw, record the version by running `openclaw --version`.
+
+### 6. Evaluate Each Model
 
 Now act as an impartial judge. For each model:
 
@@ -94,7 +100,7 @@ For each score, write a 1-2 sentence justification. Be specific — reference ac
 
 Evaluation integrity matters: evaluate each model's output independently. Read and score one model fully before moving to the next, so earlier scores don't anchor later ones. If you catch yourself comparing during scoring, reset and evaluate against the task requirements only.
 
-### 6. Present Results
+### 7. Present Results
 
 Output a **summary table** in markdown:
 
@@ -119,7 +125,7 @@ Then for each model, show:
 
 End with a brief **verdict**: which model performed best for this task and why, noting any interesting tradeoffs (e.g., "sonnet was faster and cheaper but opus produced more thorough analysis").
 
-### 7. Save Results
+### 8. Save Results
 
 Write structured results to `results.json` in a `.agent-bench/<YYYYMMDD-HHmmss>/` directory within the current working directory (add `.agent-bench/` to `.gitignore` if the project uses git):
 
@@ -128,12 +134,19 @@ Write structured results to `results.json` in a `.agent-bench/<YYYYMMDD-HHmmss>/
   "task": "the task description",
   "timeout_seconds": 600,
   "timestamp": "2025-01-15T10:30:00Z",
+  "categories": ["coding", "automation"],
+  "tags": ["python", "cli", "csv"],
+  "openclawVersion": "1.2.3",
   "models": [
     {
-      "model": "opus",
+      "model": "anthropic/claude-sonnet-4",
       "status": "completed",
       "duration_seconds": 45,
-      "usage": {},
+      "usage": {
+        "tokens_in": 1200,
+        "cached_tokens_in": 800,
+        "tokens_out": 350
+      },
       "rounds": {
         "messages": 12,
         "tool_calls": 15
@@ -148,12 +161,25 @@ Write structured results to `results.json` in a `.agent-bench/<YYYYMMDD-HHmmss>/
         "quality": "...",
         "overall": "..."
       },
+      "response": "the model's final response text",
       "workspace": "<path to model's workspace>"
     }
   ],
-  "verdict": "..."
+  "verdict": {
+    "winner": "anthropic/claude-sonnet-4",
+    "summary": "One-sentence summary of who won and why",
+    "reasoning": "2-3 sentence detailed explanation of the comparison and tradeoffs"
+  }
 }
 ```
+
+**Schema notes:**
+- `categories`: One or more from the predefined list. Always include.
+- `tags`: Up to 5 short descriptive tags. Always include.
+- `openclawVersion`: Include if running on OpenClaw, omit otherwise.
+- `models[].model`: Use the full model identifier (e.g., `anthropic/claude-sonnet-4`, not just `sonnet`)
+- `models[].usage`: Pass through runtime token fields. Use `tokens_in` for uncached input tokens, `cached_tokens_in` for cached input tokens, `tokens_out` for output tokens. Omit fields the runtime doesn't provide.
+- `verdict`: Must be a JSON object with `winner` (full model ID, or `null` if all failed), `summary`, and `reasoning` — not a plain string.
 
 Tell the user where the benchmark directory and each model's workspace are so they can inspect individual outputs.
 
