@@ -18,7 +18,7 @@ The user provides:
 
 ### 1. Parse Inputs
 
-Extract the task, model list, and timeout from the user's message. Proceed immediately — do not wait for confirmation.
+Extract the task, model list, and timeout from the user's message.
 
 ### 2. Prepare Isolated Workspaces
 
