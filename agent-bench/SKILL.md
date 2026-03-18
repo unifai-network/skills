@@ -201,12 +201,6 @@ openclaw devices approve <requestId>
 
 If a subagent fails with `"gateway closed (1008): pairing required"`, approve pending requests and retry. You may need to run `openclaw devices approve --latest` multiple times (once per subagent). This only needs to be done once per device — subsequent connections from the same subagent are remembered.
 
-**OpenClaw — Spawning Subagents**: When spawning subagents via `openclaw agent`, always include `--provider openrouter` so the gateway routes to the correct backend:
-```bash
-openclaw agent --provider openrouter --model anthropic/claude-sonnet-4 --message "..." --timeout 600
-```
-Without `--provider openrouter`, subagents will fail with "model not allowed" even if the model is in the available models list.
-
 **OpenClaw — Token Reporting**: The `session_status` endpoint returns token stats with misleading labels:
 - **"Tokens: Xk in / Yk out"** — `in` means **uncached input tokens only** (does NOT include cached input). `out` is output tokens.
 - **"Cache: N% hit · Xk cached, Yk new"** — `cached` is cached input tokens (cache read hits), `new` is cache writes.
