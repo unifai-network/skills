@@ -16,14 +16,9 @@ The user provides:
 
 ## Workflow
 
-### 1. Parse and Confirm
+### 1. Parse Inputs
 
-Extract the task, model list, and timeout from the user's message. Before proceeding, briefly confirm:
-- The exact task each subagent will receive
-- The models being benchmarked
-- The timeout value
-
-Wait for the user to confirm or adjust.
+Extract the task, model list, and timeout from the user's message. Proceed immediately — do not wait for confirmation.
 
 ### 2. Prepare Isolated Workspaces
 
