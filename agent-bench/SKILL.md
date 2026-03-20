@@ -75,7 +75,15 @@ Auto-classify the benchmark task into one or more categories from: `coding`, `wr
 
 If running on OpenClaw, record the version by running `openclaw --version`.
 
-### 6. Evaluate Each Model
+### 6. Collect Cost Data
+
+Before evaluating, retrieve the USD cost for each subagent session so you can score value-for-money.
+
+Use `sessions_list` (or `openclaw sessions list --json` on OpenClaw) to get all sessions with their cost data. Match each subagent session to its model and record the USD cost.
+
+If cost data is unavailable (tool not supported or returns no cost), record cost as `null` and note this — the Cost-Effectiveness score will be based on token usage as a rough proxy.
+
+### 7. Evaluate Each Model
 
 Now act as an impartial judge. For each model:
 
@@ -83,19 +91,20 @@ Now act as an impartial judge. For each model:
 2. List and read the files in the model's workspace directory
 3. If the task involved code, attempt to run/test it (within the model's workspace)
 4. If the task involved writing, research, or analysis, evaluate the substance and presentation
-5. Score on three dimensions:
+5. Score on four dimensions:
 
 | Metric | Scale | What it measures |
 |--------|-------|------------------|
 | **Completeness** | 0–10 | Did the agent address all parts of the task? 10 = every requirement met, 0 = nothing done |
 | **Quality** | 0–10 | How good is the output? Accuracy, depth, clarity, structure, attention to detail. Adapt criteria to the task type — code quality for coding tasks, writing quality for writing tasks, analytical rigor for research tasks, etc. |
-| **Overall** | 0–10 | Holistic score weighing both completeness and quality, plus any other impressions (creativity, efficiency, going above and beyond) |
+| **Performance** | 0–10 | Holistic score weighing completeness and quality, plus any other impressions (creativity, efficiency, going above and beyond). Pure output quality — cost is irrelevant. |
+| **Cost-Effectiveness** | 0–10 | How much quality per dollar? Consider performance relative to USD cost. A model scoring 8/10 for $0.05 is more cost-effective than one scoring 9/10 for $0.50. If no cost data, use token usage as proxy. |
 
-For each score, write a 1-2 sentence justification. Be specific — reference actual outputs, files, or content.
+For each score, write a 1-2 sentence justification. Be specific — reference actual outputs, files, or content. Cost-Effectiveness justification must reference actual cost.
 
 Evaluation integrity matters: evaluate each model's output independently. Read and score one model fully before moving to the next, so earlier scores don't anchor later ones. If you catch yourself comparing during scoring, reset and evaluate against the task requirements only.
 
-### 7. Present Results
+### 8. Present Results
 
 Output a **summary table** in markdown:
 
@@ -106,11 +115,11 @@ Output a **summary table** in markdown:
 **Timeout**: <value>
 **Date**: <timestamp>
 
-| Model | Completeness | Quality | Overall | Duration | Msgs | Tool Calls | Status | ... (runtime-reported usage) |
-|-------|-------------|---------|---------|----------|------|------------|--------|------------------------------|
-| opus  | 9           | 8       | 9       | 45s      | 12   | 15         | completed | (add columns for whatever usage fields the runtime returns) |
-| sonnet| 8           | 9       | 8       | 32s      | 8    | 10         | completed | |
-| haiku | 6           | 5       | 5       | 18s      | 4    | 6          | completed | |
+| Model | Completeness | Quality | Performance | Cost-Effectiveness | Duration | Cost | Msgs | Tool Calls | Status | ... (runtime-reported usage) |
+|-------|-------------|---------|-------------|-------------------|----------|------|------|------------|--------|------------------------------|
+| opus  | 9           | 8       | 9           | 6                 | 45s      | $0.12 | 12   | 15         | completed | (add columns for whatever usage fields the runtime returns) |
+| sonnet| 8           | 9       | 8           | 8                 | 32s      | $0.05 | 8    | 10         | completed | |
+| haiku | 6           | 5       | 5           | 9                 | 18s      | $0.01 | 4    | 6          | completed | |
 ```
 
 Then for each model, show:
@@ -118,9 +127,13 @@ Then for each model, show:
 - Notable strengths or weaknesses
 - Key outputs produced (with file paths if applicable)
 
-End with a brief **verdict**: which model performed best for this task and why, noting any interesting tradeoffs (e.g., "sonnet was faster and cheaper but opus produced more thorough analysis").
+End with a brief **verdict** naming two winners:
+- **Performance Winner**: best output regardless of cost
+- **Cost-Effectiveness Winner**: best quality-per-dollar
 
-### 8. Save Results
+If the same model wins both, state it explicitly. Note any interesting tradeoffs.
+
+### 9. Save Results
 
 Write structured results to `results.json` in a `.agent-bench/<YYYYMMDD-HHmmss>/` directory within the current working directory (add `.agent-bench/` to `.gitignore` if the project uses git):
 
@@ -137,6 +150,7 @@ Write structured results to `results.json` in a `.agent-bench/<YYYYMMDD-HHmmss>/
       "model": "anthropic/claude-sonnet-4",
       "status": "completed",
       "duration_seconds": 45,
+      "cost_usd": 0.0523,
       "usage": {
         "tokens_in": 1200,
         "cached_tokens_in": 800,
@@ -149,19 +163,22 @@ Write structured results to `results.json` in a `.agent-bench/<YYYYMMDD-HHmmss>/
       "scores": {
         "completeness": 9,
         "quality": 8,
-        "overall": 9
+        "performance": 9,
+        "costEffectiveness": 7
       },
       "justifications": {
         "completeness": "...",
         "quality": "...",
-        "overall": "..."
+        "performance": "...",
+        "costEffectiveness": "..."
       },
       "response": "the model's final response text",
       "workspace": "<path to model's workspace>"
     }
   ],
   "verdict": {
-    "winner": "anthropic/claude-sonnet-4",
+    "performanceWinner": "anthropic/claude-sonnet-4",
+    "costEffectivenessWinner": "anthropic/claude-haiku-4",
     "summary": "One-sentence summary of who won and why",
     "reasoning": "2-3 sentence detailed explanation of the comparison and tradeoffs"
   }
@@ -173,8 +190,9 @@ Write structured results to `results.json` in a `.agent-bench/<YYYYMMDD-HHmmss>/
 - `tags`: Up to 5 short descriptive tags. Always include.
 - `openclawVersion`: Include if running on OpenClaw, omit otherwise.
 - `models[].model`: Use the full model identifier (e.g., `anthropic/claude-sonnet-4`, not just `sonnet`)
+- `models[].cost_usd`: USD cost for this model's session. Use `null` if cost data is unavailable.
 - `models[].usage`: Pass through runtime token fields. Use `tokens_in` for uncached input tokens, `cached_tokens_in` for cached input tokens, `tokens_out` for output tokens. Omit fields the runtime doesn't provide.
-- `verdict`: Must be a JSON object with `winner` (full model ID, or `null` if all failed), `summary`, and `reasoning` — not a plain string.
+- `verdict`: Must be a JSON object with `performanceWinner` (full model ID of performance winner, or `null`), `costEffectivenessWinner` (full model ID of cost-effectiveness winner, or `null`), `summary`, and `reasoning` — not a plain string. The old `winner` field is deprecated.
 
 Tell the user where the benchmark directory and each model's workspace are so they can inspect individual outputs.
 
