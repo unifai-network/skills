@@ -77,11 +77,17 @@ If running on OpenClaw, record the version by running `openclaw --version`.
 
 ### 6. Collect Cost Data
 
-Before evaluating, retrieve the USD cost for each subagent session so you can score value-for-money.
+After all subagents have finished (important — wait until all are done!), retrieve the USD cost for each subagent session so you can score value-for-money.
 
-Use `sessions_list` (or `openclaw sessions list --json` on OpenClaw) to get all sessions with their cost data. Match each subagent session to its model and record the USD cost.
+**On OpenClaw**, run the bundled cost collection script:
 
-If cost data is unavailable (tool not supported or returns no cost), record cost as `null` and note this — the Cost-Effectiveness score will be based on token usage as a rough proxy.
+```bash
+python3 scripts/collect_session_costs.py
+```
+
+This reads OpenClaw session JSONL files and outputs JSON with each session's model and USD cost (`costUsd` field). Match each subagent session to its model using the `model` field. Exclude your own judge session (you'll recognize it by your own model name or session ID). Record the `costUsd` value for each benchmarked model.
+
+**On other runtimes**, use `sessions_list` or equivalent to get cost data. If no cost data is available from any source, record cost as `null` and note this — the Cost-Effectiveness score will be based on token usage as a rough proxy.
 
 ### 7. Evaluate Each Model
 
@@ -218,7 +224,7 @@ If a subagent fails with `"gateway closed (1008): pairing required"`, approve pe
 - **"Tokens: Xk in / Yk out"** — `in` means **uncached input tokens only** (does NOT include cached input). `out` is output tokens.
 - **"Cache: N% hit · Xk cached, Yk new"** — `cached` is cached input tokens (cache read hits), `new` is cache writes.
 - There is **no total input token field** returned. Do not sum uncached + cached to fabricate one.
-- No USD cost is returned.
+- `session_status` does NOT return USD cost. Use the Python script from Step 6 to get actual costs from session JSONL files instead.
 - The completion event stats line (e.g., `tokens 29.7k (in 29.6k / out 82)`) matches the session_status values and has the same caveat — `in` is uncached only.
 
 ## Tips for Good Benchmark Tasks
