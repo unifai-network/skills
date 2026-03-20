@@ -51,6 +51,8 @@ Each subagent gets its own unique directory path (e.g., `.agent-bench/20260314-1
 
 If the runtime also supports additional isolation mechanisms (e.g., `isolation: "worktree"` in Claude Code), use them as an extra layer of protection. But always assign per-model directories regardless — this is the universal, runtime-agnostic safeguard.
 
+**Long-result handling**: Before spawning, assess whether the task is likely to produce long output (e.g., writing, research, analysis, or code generation tasks). If so, add an instruction to the subagent's prompt telling it to save its full result to a file in its workspace directory and return the file path. This prevents long responses from being truncated by the runtime. For short-output tasks (e.g., simple Q&A, small scripts), this is unnecessary.
+
 Other implementation details:
 - Each subagent must start with a clean context (no shared history)
 - If the runtime supports model selection for subagents, use it to assign the correct model
