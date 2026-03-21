@@ -84,8 +84,10 @@ After all subagents have finished (important — wait until all are done!), retr
 **On OpenClaw**, run the bundled cost collection script:
 
 ```bash
-python3 scripts/collect_session_costs.py
+python3 ~/.openclaw/skills/agent-bench/scripts/collect_session_costs.py
 ```
+
+The script path is absolute because your working directory may not be the skill directory.
 
 This reads OpenClaw session JSONL files and outputs JSON with each session's model and USD cost (`costUsd` field). Match each subagent session to its model using the `model` field. Exclude your own judge session (you'll recognize it by your own model name or session ID). Record the `costUsd` value for each benchmarked model.
 
@@ -127,7 +129,7 @@ Output a **summary table** in markdown:
 |-------|-------------|---------|-------------|-------------------|----------|------|------|------------|--------|------------------------------|
 | opus  | 9           | 8       | 9           | 6                 | 45s      | $0.12 | 12   | 15         | completed | (add columns for whatever usage fields the runtime returns) |
 | sonnet| 8           | 9       | 8           | 8                 | 32s      | $0.05 | 8    | 10         | completed | |
-| haiku | 6           | 5       | 5           | 9                 | 18s      | $0.01 | 4    | 6          | completed | |
+| haiku | 6           | 5       | 5           | 9                 | 18s      | $0.003 | 4    | 6          | completed | |
 ```
 
 Then for each model, show:
