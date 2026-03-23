@@ -110,6 +110,31 @@ class TestEstimateCost:
         assert found is False
         assert cost == 0.0
 
+    def test_openrouter_prefix_stripped(self):
+        """Session JSONL may store model as openrouter/provider/model; pricing map uses provider/model."""
+        cost, found = estimate_cost(
+            "openrouter/minimax/minimax-m2.7", 26300, 297700, 8200, self.PRICING_MAP
+        )
+        assert found is True
+        assert cost > 0.03  # same as test_minimax_cost_estimation
+
+    def test_openrouter_prefix_not_stripped_when_unnecessary(self):
+        """Exact match takes priority over prefix stripping."""
+        special_pricing = {
+            **self.PRICING_MAP,
+            "openrouter/minimax/minimax-m2.7": {
+                "prompt": 0.001,
+                "completion": 0.002,
+                "cache_read": 0.0005,
+            },
+        }
+        cost, found = estimate_cost(
+            "openrouter/minimax/minimax-m2.7", 1000, 0, 1000, special_pricing
+        )
+        assert found is True
+        # Should use the exact match (0.001*1000 + 0.002*1000 = 3.0), not the stripped one
+        assert round(cost, 4) == 3.0
+
 
 # ---------------------------------------------------------------------------
 # collect_costs — integration with session files
@@ -224,6 +249,40 @@ class TestCollectCostsIntegration:
                 assert judge["costEstimated"] is False
                 assert model["costEstimated"] is True
                 assert model["costUsd"] > 0
+
+    def test_openrouter_prefixed_model_gets_estimated(self, tmp_path):
+        """Session JSONL model field has openrouter/ prefix; pricing map uses bare ID."""
+        content = _make_session_jsonl([
+            ("openrouter/z-ai/glm-5-turbo", {
+                "input": 27950, "output": 9464, "cacheRead": 490211,
+                "cost": {"total": 0},
+            }),
+        ])
+        _setup_session_dir(str(tmp_path), {"sess-prefixed": content})
+
+        fake_pricing = {
+            "z-ai/glm-5-turbo": {
+                "prompt": 0.0000005,
+                "completion": 0.000002,
+                "cache_read": 0.00000025,
+            },
+        }
+
+        with mock.patch("os.path.expanduser", return_value=str(tmp_path)):
+            with mock.patch(
+                "collect_session_costs.fetch_pricing_map", return_value=fake_pricing
+            ):
+                import io, sys
+                captured = io.StringIO()
+                sys.stdout = captured
+                collect_costs()
+                sys.stdout = sys.__stdout__
+
+                results = json.loads(captured.getvalue())
+                assert len(results) == 1
+                assert results[0]["costEstimated"] is True
+                assert results[0]["costUsd"] > 0
+                assert results[0]["model"] == "openrouter/z-ai/glm-5-turbo"
 
     def test_zero_cost_with_failed_pricing_fetch(self, tmp_path):
         """When pricing fetch fails, zero-cost sessions stay at 0."""

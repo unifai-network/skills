@@ -78,6 +78,10 @@ def fetch_pricing_map():
 def estimate_cost(model, tokens_input, tokens_cache_read, tokens_output, pricing_map):
     """Estimate USD cost from token counts and OpenRouter pricing. Returns (cost_usd, found)."""
     pricing = pricing_map.get(model)
+    # OpenClaw session files may store model with openrouter/ prefix, but
+    # OpenRouter pricing API keys models without it.
+    if not pricing and model.startswith("openrouter/"):
+        pricing = pricing_map.get(model[len("openrouter/"):])
     if not pricing:
         return 0.0, False
     cost = (
