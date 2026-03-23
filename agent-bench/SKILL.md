@@ -89,7 +89,7 @@ python3 ~/.openclaw/skills/agent-bench/scripts/collect_session_costs.py
 
 The script path is absolute because your working directory may not be the skill directory.
 
-This reads OpenClaw session JSONL files and outputs JSON with each session's model and USD cost (`costUsd` field). Match each subagent session to its model using the `model` field. Exclude your own judge session (you'll recognize it by your own model name or session ID). Record the `costUsd` value for each benchmarked model.
+This reads OpenClaw session JSONL files and outputs JSON with each session's model and USD cost (`costUsd` field). When a provider doesn't report costs in session data, the script automatically estimates cost from token counts using OpenRouter's pricing API — check the `costEstimated` field (`true` = estimated from pricing, `false` = reported by provider). Match each subagent session to its model using the `model` field. Exclude your own judge session (you'll recognize it by your own model name or session ID). Record the `costUsd` value for each benchmarked model. Use the `costUsd` value for Cost-Effectiveness scoring regardless of whether it was reported or estimated — both are reliable.
 
 **On other runtimes**, use `sessions_list` or equivalent to get cost data. If no cost data is available from any source, record cost as `null` and note this — the Cost-Effectiveness score will be based on token usage as a rough proxy.
 
