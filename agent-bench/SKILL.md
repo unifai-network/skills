@@ -58,6 +58,7 @@ Other implementation details:
 - If the runtime supports model selection for subagents, use it to assign the correct model
 - If the runtime supports background/async execution, use it so all models run in parallel
 - If the runtime supports timeout for subagents, apply the configured timeout
+- **Do NOT include `streamTo`** when spawning subagents — it is incompatible with `runtime: "subagent"` and will cause a fatal error.
 
 ### 4. Collect Results
 
